@@ -14,3 +14,25 @@
 Скрипт должен содержать подмодуль с данными (массив слов, из которых будет выбираться слово для игры).
 Эти данные должны быть импортированы в основной скрипт.
 """
+
+
+def play():
+    letter_from_user = input('Enter your letter:\n')
+    if letter_from_user.lower() == 'n':
+        exit
+    elif len(letter_from_user) > 1:
+        print('Enter only one letter')
+        play()
+    elif letter_from_user.isdigit():
+        print('Numbers not in the game.')
+        play()
+
+start_or_not = input('Do you want start the game? Y/N\n')
+if start_or_not.lower() == 'y':
+    attempts = 5
+    print('The number of remaining attempts:', attempts)
+    print('word: ####')
+    play()
+
+
+
