@@ -31,7 +31,7 @@ def init_fields():
 
     i = random.randint(0, len(words.words) - 1)
     word = words.words[i]
-    strikeout = ['#'] * len(word)  # list because we need need to replace # to correct letter - but String is immutable
+    strikeout = ['#'] * len(word)  # list because we need to replace # to correct letter - but String is immutable
     attempts = 5
     letters_tried = set()
 
