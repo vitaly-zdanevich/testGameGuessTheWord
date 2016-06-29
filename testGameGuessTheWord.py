@@ -54,8 +54,8 @@ def play():
     elif letter_from_user not in word or letter_from_user in strikeout:
         attempts -= 1
     elif letter_from_user.lower() in word:
-        list_indexes = [i for i, char in enumerate(word) if char == letter_from_user]  # list comprehension, I like it
-        for i in list_indexes:
+        list_indexes_of_founded_position_of_letter = [i for i, char in enumerate(word) if char == letter_from_user]  # list comprehension, I like it
+        for i in list_indexes_of_founded_position_of_letter:
             strikeout[i] = letter_from_user.lower()
         if '#' not in strikeout:
             print('WIN! The word is:', (''.join(word)).upper(), '\n')
