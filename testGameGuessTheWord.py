@@ -14,24 +14,69 @@
 Скрипт должен содержать подмодуль с данными (массив слов, из которых будет выбираться слово для игры).
 Эти данные должны быть импортированы в основной скрипт.
 """
+import words
+import random
+
+attempts = 0
+word = ''
+strikeout = []
+letters_tried = []
+
+
+def init_fields():
+    global attempts
+    global word
+    global strikeout
+    global letters_tried
+
+    i = random.randint(0, len(words.words) - 1)
+    word = words.words[i]
+    strikeout = ['#'] * len(word)  # list because we need need to replace # to correct letter - but String is immutable
+    attempts = 5
+    letters_tried = []
 
 
 def play():
+    global attempts
+
+    if len(letters_tried) > 0:
+        print('Letter that you tried:', ', '.join(letters_tried))
+    print('The number of remaining attempts:', attempts)
+    print('word:', ''.join(strikeout))
     letter_from_user = input('Enter your letter:\n')
-    if letter_from_user.lower() == 'n':
-        exit
+    letters_tried.append(letter_from_user)
+
+    if letter_from_user == 'N':
+        exit()
     elif len(letter_from_user) > 1:
         print('Enter only one letter')
-        play()
     elif letter_from_user.isdigit():
         print('Numbers not in the game.')
-        play()
+
+    elif letter_from_user not in word or letter_from_user in strikeout:
+        attempts -= 1
+    elif letter_from_user.lower() in word:
+        list_indexes = [i for i, char in enumerate(word) if char == letter_from_user]  # list comprehension, I like it
+        for i in list_indexes:
+            strikeout[i] = letter_from_user.lower()
+        if '#' not in strikeout:
+            print('WIN! The word is:', ''.join(word), '\n')
+            continue_or_not = input('Play again?\n')
+            if continue_or_not.lower() == 'y':
+                init_fields()
+                play()
+            exit()
+    if attempts == 0:
+        continue_or_not = input('Game over. Play again?\n')
+        init_fields()
+        if continue_or_not.lower() != 'y':
+            exit()
+    play()
+
 
 start_or_not = input('Do you want start the game? Y/N\n')
 if start_or_not.lower() == 'y':
-    attempts = 5
-    print('The number of remaining attempts:', attempts)
-    print('word: ####')
+    init_fields()
     play()
 
 
