@@ -14,68 +14,60 @@
 Скрипт должен содержать подмодуль с данными (массив слов, из которых будет выбираться слово для игры).
 Эти данные должны быть импортированы в основной скрипт.
 """
+import os
 import words
 import random
 
-attempts = 0
-word = ''
-strikeout = []
-letters_tried = set()
 
+class Game:
 
-def init_fields():
-    global attempts
-    global word
-    global strikeout
-    global letters_tried
+    def __init__(self):
+        if not hasattr(self, 'strikeout') or (hasattr(self, 'strikeout') and '#' not in self.strikeout):
+            self.word = random.choice(words.words)
+            self.strikeout = ['#'] * len(self.word)  # list because we need to replace # to correct letter - but String is immutable
+            self.attempts = 5
+            self.letters_tried = set()
 
-    i = random.randint(0, len(words.words) - 1)
-    word = words.words[i]
-    strikeout = ['#'] * len(word)  # list because we need to replace # to correct letter - but String is immutable
-    attempts = 5
-    letters_tried = set()
+    def play(self):
+        os.system('clear')
 
+        if len(self.letters_tried) > 0:
+            print('Letters that you tried:', ', '.join(self.letters_tried))
+        print('The number of remaining attempts:', self.attempts)
+        print('word:', ''.join(self.strikeout))  # list to string
+        letter_from_user = input('Enter your letter:\n')
+        self.letters_tried.add(letter_from_user)
 
-def play():
-    global attempts
+        if len(letter_from_user) > 1:
+            print('Enter only one letter')
+        elif letter_from_user.isdigit():
+            print('Numbers not in the game')
 
-    if len(letters_tried) > 0:
-        print('Letter that you tried:', ', '.join(letters_tried))
-    print('The number of remaining attempts:', attempts)
-    print('word:', ''.join(strikeout))  # list to string
-    letter_from_user = input('Enter your letter:\n')
-    letters_tried.add(letter_from_user)
-
-    if len(letter_from_user) > 1:
-        print('Enter only one letter')
-    elif letter_from_user.isdigit():
-        print('Numbers not in the game')
-
-    elif letter_from_user not in word or letter_from_user in strikeout:
-        attempts -= 1
-    elif letter_from_user.lower() in word:
-        list_indexes_of_founded_position_of_letter = [i for i, char in enumerate(word) if char == letter_from_user]  # list comprehension, I like it
-        for i in list_indexes_of_founded_position_of_letter:
-            strikeout[i] = letter_from_user.lower()
-        if '#' not in strikeout:
-            print('WIN! The word is:', (''.join(word)).upper(), '\n')
-            continue_or_not = input('Play again?[Y/N]\n')
-            if continue_or_not.lower() == 'y':
-                init_fields()
-                play()
-            exit()
-    if attempts == 0:
-        continue_or_not = input('Game over. Play again[Y/N]?\n')
-        init_fields()
-        if continue_or_not.lower() != 'y':
-            exit()
-    play()
+        elif letter_from_user not in self.word or letter_from_user in self.strikeout:
+            self.attempts -= 1
+        elif letter_from_user.lower() in self.word:
+            list_indexes_of_founded_position_of_letter = [i for i, char in enumerate(self.word) if char == letter_from_user]  # list comprehension, I like it
+            for i in list_indexes_of_founded_position_of_letter:
+                self.strikeout[i] = letter_from_user.lower()
+            if '#' not in self.strikeout:
+                print('WIN! The word is:', (''.join(self.word)).upper(), '\n')
+                continue_or_not = input('Play again?[Y/N]\n')
+                if continue_or_not.lower() == 'y':
+                    game = Game()
+                    self.play()
+                exit()
+        if self.attempts == 0:
+            continue_or_not = input('Game over. Play again[Y/N]?\n')
+            init_fields()
+            if continue_or_not.lower() != 'y':
+                exit()
+        self.play()
 
 
 start_or_not = input('Do you want start the game? [Y/N]\n')
 if start_or_not.lower() == 'y':
-    init_fields()
-    play()
+    game = Game()
+    game.play()
 
 
 
