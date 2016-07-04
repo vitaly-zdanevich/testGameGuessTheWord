@@ -22,45 +22,58 @@ import random
 class Game:
 
     def __init__(self):
-        if not hasattr(self, 'strikeout') or (hasattr(self, 'strikeout') and '#' not in self.strikeout):
-            self.word = random.choice(words.words)
-            self.strikeout = ['#'] * len(self.word)  # list because we need to replace # to correct letter - but String is immutable
-            self.attempts = 5
-            self.letters_tried = set()
+        self.word = ''
+        self.strikeout = []
+        self.attempts = 0
+        self.letter_from_user = ''
+        self.letters_tried = set()
+
+        Game.init(self)
+
+    def init(self):
+        self.word = random.choice(words.words)
+        self.strikeout = ['#'] * len(self.word)  # list because we need to replace # to correct letter - but String is immutable
+        self.attempts = 5
+        self.letters_tried = set()
 
     def play(self):
         os.system('clear')
 
+        self.print_header()
+        self.validate()
+
+    def print_header(self):
         if len(self.letters_tried) > 0:
             print('Letters that you tried:', ', '.join(self.letters_tried))
         print('The number of remaining attempts:', self.attempts)
         print('word:', ''.join(self.strikeout))  # list to string
-        letter_from_user = input('Enter your letter:\n')
-        self.letters_tried.add(letter_from_user)
+        self.letter_from_user = input('Enter your letter:\n')
+        self.letters_tried.add(self.letter_from_user)
 
-        if len(letter_from_user) > 1:
+    def validate(self):
+        if len(self.letter_from_user) > 1:
             print('Enter only one letter')
-        elif letter_from_user.isdigit():
+        elif self.letter_from_user.isdigit():
             print('Numbers not in the game')
 
-        elif letter_from_user not in self.word or letter_from_user in self.strikeout:
+        elif self.letter_from_user not in self.word or self.letter_from_user in self.strikeout:
             self.attempts -= 1
-        elif letter_from_user.lower() in self.word:
-            list_indexes_of_founded_position_of_letter = [i for i, char in enumerate(self.word) if char == letter_from_user]  # list comprehension, I like it
+        elif self.letter_from_user.lower() in self.word:
+            list_indexes_of_founded_position_of_letter = [i for i, char in enumerate(self.word) if char == self.letter_from_user]  # list comprehension, I like it
             for i in list_indexes_of_founded_position_of_letter:
-                self.strikeout[i] = letter_from_user.lower()
+                self.strikeout[i] = self.letter_from_user.lower()
             if '#' not in self.strikeout:
                 print('WIN! The word is:', (''.join(self.word)).upper(), '\n')
                 continue_or_not = input('Play again?[Y/N]\n')
                 if continue_or_not.lower() == 'y':
-                    game = Game()
+                    game.init()
                     self.play()
                 exit()
         if self.attempts == 0:
             continue_or_not = input('Game over. Play again[Y/N]?\n')
-            init_fields()
             if continue_or_not.lower() != 'y':
                 exit()
+            game.init()
         self.play()
 
 
